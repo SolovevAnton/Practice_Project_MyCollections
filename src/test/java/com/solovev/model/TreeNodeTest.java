@@ -1,33 +1,50 @@
 package com.solovev.model;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TreeNodeTest {
-
     @Test
-    public void appendChild() {
-        assertFalse(firstNode.appendChild(firstNode));
-        assertFalse(secondA.appendChild(firstNode));
-        assertFalse(thirdA3.appendChild(firstNode));
+    public void setParentTest(){
+        assertFalse(firstNode.setParent(firstNode));
+        assertFalse(firstNode.setParent(secondA));
+        assertFalse(firstNode.setParent(thirdA1));
+        assertNull(firstNode.getParent());
 
+        assertTrue(secondA.setParent(firstNode));
+        //test that it does not duplicate secondA
+        assertEquals(1,firstNode.getChildren().stream().filter(node -> node.equals(secondA)).count());
+        assertTrue(thirdA1.setParent(firstNode));
+        assertFalse(secondA.contains(thirdA1));
+
+        assertFalse(secondB.contains(thirdA2));
+        assertTrue(secondA.setParent(secondB));
+        assertTrue(secondB.contains(thirdA2));
 
     }
+    @ParameterizedTest
+    @NullSource
+    public void nullSetParentAndContainsTest(TreeNode node) {
+        assertFalse(firstNode.contains(node));
+        assertFalse(firstNode.appendChild(node));
 
-    @Test
-    public void wideSearch() {
+        assertTrue(firstNode.setParent(node));
+        assertTrue(secondA.setParent(node));
+
+        assertFalse(firstNode.contains(secondA));
+        assertFalse(firstNode.contains(thirdA1));
     }
-
     @Test
-    public void contains() {
+    public void containsTest() {
 
         assertTrue(firstNode.contains(firstNode));
         assertTrue(firstNode.contains(secondA));
@@ -38,6 +55,34 @@ public class TreeNodeTest {
         assertFalse(secondA.contains(firstNode));
         assertFalse(thirdC1.contains(firstNode));
         assertFalse(firstNode.contains(emptyNode));
+    }
+    @Test
+    public void appendChild() {
+        assertFalse(firstNode.appendChild(firstNode));
+        assertFalse(secondA.appendChild(firstNode));
+        assertFalse(thirdA3.appendChild(firstNode));
+
+        assertTrue(firstNode.appendChild(thirdA1));
+        assertTrue(thirdA1.appendChild(secondA));
+
+
+        assertTrue(thirdA1.appendChild(emptyNode));
+        assertTrue(firstNode.appendChild(emptyNode));
+        assertTrue(firstNode.contains(emptyNode));
+        assertFalse(thirdA1.contains(emptyNode));
+
+    }
+
+    @Test
+    public void namesWideSearch() { //tests only for names
+        assertEquals(Optional.of(firstNode),firstNode.wideSearch("1"));
+        assertEquals(Optional.empty(),firstNode.wideSearch("0"));
+
+        assertEquals(Optional.of(thirdC2),firstNode.wideSearch("1C2"));
+
+        assertEquals(Optional.empty(),firstNode.wideSearch((String) null));
+        thirdC2.appendChild(emptyNode);
+        assertEquals(Optional.of(emptyNode),firstNode.wideSearch((String) null));
     }
 
     @Test
@@ -63,17 +108,14 @@ public class TreeNodeTest {
                 "1C 1C1 1C2", secondC.toString());
     }
 
-    @ParameterizedTest
-    @NullSource
-    public void nullSetParentAndContainsTest(TreeNode node) {
-        assertFalse(firstNode.contains(node));
-        assertFalse(firstNode.appendChild(node));
 
-        assertTrue(firstNode.setParent(node));
-        assertTrue(secondA.setParent(node));
-
-        assertFalse(firstNode.contains(secondA));
-        assertFalse(firstNode.contains(thirdA1));
+    /**
+     * Checks that nodes does not go to infinite loop after any actions
+     */
+    @AfterEach
+    @Timeout(1000)
+    public void testNotInfiniteLoop(){
+        firstNode.forEach(n -> {});
     }
 
     private TreeNode emptyNode;
@@ -95,7 +137,7 @@ public class TreeNodeTest {
      * 1C 1C1 1C2"
      */
     @BeforeEach
-    private void resetNodes() {
+    public void resetNodes() {
         emptyNode = new TreeNode();
         firstNode = new TreeNode("1");
         secondA = new TreeNode("1A", firstNode);

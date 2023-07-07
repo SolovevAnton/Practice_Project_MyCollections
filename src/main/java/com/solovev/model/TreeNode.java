@@ -43,7 +43,7 @@ public class TreeNode implements Iterable<TreeNode> {
      * @param predicate for tree node to check
      * @return first found treeNode for which predicate is true or empty optional if nothing was found
      */
-    public Optional<TreeNode> wideSearch(Predicate<TreeNode> predicate) {
+    public Optional<TreeNode> wideSearch(Predicate<TreeNode> predicate) { //toDo can be done with iterator, but to practice is kept like this
         if (predicate.test(this)) {
             return Optional.of(this);
         }
@@ -56,6 +56,7 @@ public class TreeNode implements Iterable<TreeNode> {
             return Optional.empty();
         }
         TreeNode toCheck = searchQueue.poll();
+        searchQueue.addAll(toCheck.getChildren());
         return predicate.test(toCheck) ? Optional.of(toCheck) : wideSearch(searchQueue, predicate);
     }
 
@@ -119,10 +120,11 @@ public class TreeNode implements Iterable<TreeNode> {
                 this.parent.children.remove(this);
             }
             this.parent = parent;
+            if (parent != null) {
+                parent.getChildren().add(this);
+            }
         }
-        if (parent != null) {
-            parent.getChildren().add(this);
-        }
+
         return doesNotContainsParent;
     }
 
