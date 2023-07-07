@@ -8,13 +8,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TreeNodeTest {
     @Test
-    public void setParentTest(){
+    public void setParentTest() {
         assertFalse(firstNode.setParent(firstNode));
         assertFalse(firstNode.setParent(secondA));
         assertFalse(firstNode.setParent(thirdA1));
@@ -22,7 +21,7 @@ public class TreeNodeTest {
 
         assertTrue(secondA.setParent(firstNode));
         //test that it does not duplicate secondA
-        assertEquals(1,firstNode.getChildren().stream().filter(node -> node.equals(secondA)).count());
+        assertEquals(1, firstNode.getChildren().stream().filter(node -> node.equals(secondA)).count());
         assertTrue(thirdA1.setParent(firstNode));
         assertFalse(secondA.contains(thirdA1));
 
@@ -31,6 +30,7 @@ public class TreeNodeTest {
         assertTrue(secondB.contains(thirdA2));
 
     }
+
     @ParameterizedTest
     @NullSource
     public void nullSetParentAndContainsTest(TreeNode node) {
@@ -43,6 +43,7 @@ public class TreeNodeTest {
         assertFalse(firstNode.contains(secondA));
         assertFalse(firstNode.contains(thirdA1));
     }
+
     @Test
     public void containsTest() {
 
@@ -56,6 +57,7 @@ public class TreeNodeTest {
         assertFalse(thirdC1.contains(firstNode));
         assertFalse(firstNode.contains(emptyNode));
     }
+
     @Test
     public void appendChild() {
         assertFalse(firstNode.appendChild(firstNode));
@@ -75,14 +77,14 @@ public class TreeNodeTest {
 
     @Test
     public void namesWideSearch() { //tests only for names
-        assertEquals(Optional.of(firstNode),firstNode.wideSearch("1"));
-        assertEquals(Optional.empty(),firstNode.wideSearch("0"));
+        assertEquals(Optional.of(firstNode), firstNode.wideSearch("1"));
+        assertEquals(Optional.empty(), firstNode.wideSearch("0"));
 
-        assertEquals(Optional.of(thirdC2),firstNode.wideSearch("1C2"));
+        assertEquals(Optional.of(thirdC2), firstNode.wideSearch("1C2"));
 
-        assertEquals(Optional.empty(),firstNode.wideSearch((String) null));
+        assertEquals(Optional.empty(), firstNode.wideSearch((String) null));
         thirdC2.appendChild(emptyNode);
-        assertEquals(Optional.of(emptyNode),firstNode.wideSearch((String) null));
+        assertEquals(Optional.of(emptyNode), firstNode.wideSearch((String) null));
     }
 
     @Test
@@ -93,6 +95,21 @@ public class TreeNodeTest {
         assertFalse(emptyNode.contains(firstNode));
 
         assertEquals(Optional.of(emptyNode), emptyNode.wideSearch((String) null));
+    }
+    @Test
+    public void equalsTest(){
+        assertEquals(firstNode, firstNode);
+        assertNotEquals(firstNode, secondA);
+
+        assertEquals(new TreeNode("equals"),new TreeNode("equals"));
+        assertNotEquals(new TreeNode("equals",new TreeNode("parent")),new TreeNode("equals"));
+
+
+        TreeNode copySecondC = new TreeNode("1C");
+        TreeNode copyThirdC1 = new TreeNode("1C1",copySecondC);
+        assertNotEquals(secondC,copySecondC);
+        TreeNode copyThirdC2 = new TreeNode("1C2",copySecondC);
+       // assertEquals(secondC,copySecondC); toDo stack overflow, since it checks parent, then checks children then checks parent
     }
 
     @Test
@@ -114,8 +131,9 @@ public class TreeNodeTest {
      */
     @AfterEach
     @Timeout(1000)
-    public void testNotInfiniteLoop(){
-        firstNode.forEach(n -> {});
+    public void testNotInfiniteLoop() {
+        firstNode.forEach(n -> {
+        });
     }
 
     private TreeNode emptyNode;
