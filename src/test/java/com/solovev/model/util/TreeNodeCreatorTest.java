@@ -8,11 +8,31 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static com.solovev.util.TreeNodeCreator.*;
 
 public class TreeNodeCreatorTest {
+    @Test
+    public void buildTreeScannerTest(){
+        String firstNodeCreator = firstNode.toString() + "\nfinish finish";
+        Scanner scan = new Scanner(firstNodeCreator);
+
+        assertEquals(firstNode.toString(),buildTree(scan,delimiter).toString());
+
+        scan = new Scanner("Object_root\n" +
+                "Object_root Object_1\n" +
+                "Object_root Object_2\n" +
+                "Object_root Object_3\n" +
+                "Object_3 Object_4\n" +
+                "Object_3 Object_5\n" +
+                "Object_6 Object_6\n");
+
+        assertEquals("Object_root\n" +
+                "Object_root Object_1 Object_2 Object_3\n" +
+                "Object_3 Object_4 Object_5",buildTree(scan,delimiter).toString());
+    }
 
     @Test
     void buildTreeTest() {
