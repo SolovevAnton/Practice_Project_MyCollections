@@ -62,7 +62,9 @@ public class TreeNodeCreator {
         if (inputQueue.isEmpty()) {
             return new TreeNode("");
         }
-        TreeNode localRoot = mainRoot.wideSearch(inputQueue.poll()).orElseThrow();
+        String nextName = inputQueue.poll();
+        TreeNode localRoot = mainRoot.wideSearch(nextName)
+                .orElseThrow( () -> new NoSuchElementException("Tree with name: " + nextName + " is not part of the main root named: " +mainRoot.getName()));
         inputQueue.forEach(name -> localRoot.appendChild(searchOrCreate(name, mainRoot)));
         return localRoot;
     }

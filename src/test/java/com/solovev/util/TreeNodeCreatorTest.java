@@ -1,4 +1,4 @@
-package com.solovev.model.util;
+package com.solovev.util;
 
 import com.solovev.model.TreeNode;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +32,20 @@ public class TreeNodeCreatorTest {
         assertEquals("Object_root\n" +
                 "Object_root Object_1 Object_2 Object_3\n" +
                 "Object_3 Object_4 Object_5",buildTree(scan,delimiter).toString());
+
+        scan = new Scanner("1\n" +
+                "1 a c s d\n" +
+                "1 f r\n" +
+                "a a1 a2 a3\n" +
+                "a1 a1a a1b a1c\n" +
+                "f f1 f2\n" +
+                "a1c a\n" +
+                "a a");
+        assertEquals("1\n" +
+                "1 a c s d f r\n" +
+                "a a1 a2 a3\n" +
+                "f f1 f2\n" +
+                "a1 a1a a1b a1c", buildTree(scan,delimiter).toString());
     }
 
     @Test
