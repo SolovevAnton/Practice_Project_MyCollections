@@ -100,25 +100,28 @@ public class TreeNodeTest {
     public void equalsTest(){
         assertEquals(firstNode, firstNode);
         assertNotEquals(firstNode, secondA);
+        assertNotEquals(secondB, secondA);
 
         assertEquals(new TreeNode("equals"),new TreeNode("equals"));
         assertNotEquals(new TreeNode("equals",new TreeNode("parent")),new TreeNode("equals"));
+        assertEquals(new TreeNode("equals",new TreeNode("parent")),new TreeNode("equals", new TreeNode("parent")));
 
 
-        TreeNode copySecondC = new TreeNode("1C");
+        TreeNode copySecondC = new TreeNode("1C",firstNode);
         TreeNode copyThirdC1 = new TreeNode("1C1",copySecondC);
         assertNotEquals(secondC,copySecondC);
         TreeNode copyThirdC2 = new TreeNode("1C2",copySecondC);
-       // assertEquals(secondC,copySecondC); toDo stack overflow, since it checks parent, then checks children then checks parent
+        assertEquals(secondC,copySecondC);
     }
 
     @Test
     public void toStringTest() {
         assertEquals(
-                "1\n" +
-                        "1 1A 1B 1C\n" +
-                        "1A 1A1 1A2 1A3\n" +
-                        "1C 1C1 1C2", firstNode.toString());
+                """
+                        1
+                        1 1A 1B 1C
+                        1A 1A1 1A2 1A3
+                        1C 1C1 1C2""", firstNode.toString());
 
         assertEquals(secondB.getName(), secondB.toString());
         assertEquals("1C\n" +

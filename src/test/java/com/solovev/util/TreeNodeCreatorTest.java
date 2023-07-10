@@ -19,33 +19,39 @@ public class TreeNodeCreatorTest {
         String firstNodeCreator = firstNode.toString() + "\nfinish finish";
         Scanner scan = new Scanner(firstNodeCreator);
 
-        assertEquals(firstNode.toString(),buildTree(scan,delimiter).toString());
+        assertEquals(firstNode,buildTree(scan,delimiter));
 
-        scan = new Scanner("Object_root\n" +
-                "Object_root Object_1\n" +
-                "Object_root Object_2\n" +
-                "Object_root Object_3\n" +
-                "Object_3 Object_4\n" +
-                "Object_3 Object_5\n" +
-                "Object_6 Object_6\n");
+        scan = new Scanner("""
+                Object_root
+                Object_root Object_1
+                Object_root Object_2
+                Object_root Object_3
+                Object_3 Object_4
+                Object_3 Object_5
+                Object_6 Object_6
+                """);
 
-        assertEquals("Object_root\n" +
-                "Object_root Object_1 Object_2 Object_3\n" +
-                "Object_3 Object_4 Object_5",buildTree(scan,delimiter).toString());
+        assertEquals("""
+                Object_root
+                Object_root Object_1 Object_2 Object_3
+                Object_3 Object_4 Object_5""",buildTree(scan,delimiter).toString());
 
-        scan = new Scanner("1\n" +
-                "1 a c s d\n" +
-                "1 f r\n" +
-                "a a1 a2 a3\n" +
-                "a1 a1a a1b a1c\n" +
-                "f f1 f2\n" +
-                "a1c a\n" +
-                "a a");
-        assertEquals("1\n" +
-                "1 a c s d f r\n" +
-                "a a1 a2 a3\n" +
-                "f f1 f2\n" +
-                "a1 a1a a1b a1c", buildTree(scan,delimiter).toString());
+        scan = new Scanner("""
+                1
+                1 a c s d
+                1 f r
+                a a1 a2 a3
+                a1 a1a a1b a1c
+                f f1 f2
+                a1c a
+                a a""");
+
+        assertEquals("""
+                1
+                1 a c s d f r
+                a a1 a2 a3
+                f f1 f2
+                a1 a1a a1b a1c""", buildTree(scan,delimiter).toString());
     }
 
     @Test
@@ -53,6 +59,7 @@ public class TreeNodeCreatorTest {
         String thirdC1Creator = thirdC1.getName();
         String secondCCreator = secondC.getName() + delimiter + thirdC1Creator + delimiter + thirdC2.getName();
         String equalWords = thirdA1.getName() + delimiter + thirdA1.getName();
+
         assertEquals(thirdC1, buildTree(thirdC1Creator, delimiter, firstNode));
         assertEquals(secondC, buildTree(secondCCreator, delimiter, firstNode));
         assertEquals(secondC, buildTree(secondCCreator, delimiter, firstNode));
@@ -72,9 +79,9 @@ public class TreeNodeCreatorTest {
     @ParameterizedTest
     @NullSource
     public void nullTests(String str) {
-        assertEquals(new TreeNode(), searchOrCreate(str, firstNode));
+        assertEquals(emptyNode, searchOrCreate(str, firstNode));
         assertEquals(new TreeNode(), searchOrCreate(str, null));
-        assertEquals(new TreeNode(), buildTree(str,delimiter,firstNode));
+        assertEquals(emptyNode, buildTree(str,delimiter,firstNode));
         assertEquals(new TreeNode(), buildTree(str,delimiter,null));
     }
     @ParameterizedTest

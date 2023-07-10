@@ -81,6 +81,15 @@ public class TreeNode implements Iterable<TreeNode> {
     }
 
     /**
+     * Additional equals to overcome stack overflow problem: child -> parent -> child..;
+     * checks nodes based only on their names. Their parent and children quality are guaranteed by iterator;
+     * Note: if tree node will have more data it should be added to this method
+     */
+    private boolean equalsNoParentNoChildren(TreeNode node1, TreeNode node2) {
+        return Objects.equals(node1.getName(), node2.getName());
+    }
+
+    /**
      * Method to construct toString
      *
      * @return list of all children names, or emptyList if it is empty
@@ -112,7 +121,7 @@ public class TreeNode implements Iterable<TreeNode> {
      * @param parent to be set to this one
      * @return true if parent was set successfully, false if node contains this parent
      */
-    public boolean setParent(TreeNode parent) { //todo this or throws??
+    public boolean setParent(TreeNode parent) {
         boolean doesNotContainsParent = !this.contains(parent);
         if (doesNotContainsParent) {
             //removes this node from previous parent if it is not null
@@ -135,12 +144,12 @@ public class TreeNode implements Iterable<TreeNode> {
     /**
      * Provides wide going iterator for this tree
      *
-     * @return wide going iterator
+     * @return wide going iterator; if hasNext is false next  will return null;
      */
     @Override
     public Iterator<TreeNode> iterator() {
-        return new Iterator<TreeNode>() {
-            Queue<TreeNode> treeNodes = new ArrayDeque<>();
+        return new Iterator<>() {
+            final Queue<TreeNode> treeNodes = new ArrayDeque<>();
 
             {
                 treeNodes.add(TreeNode.this);
@@ -163,6 +172,11 @@ public class TreeNode implements Iterable<TreeNode> {
         };
     }
 
+    /**
+     * Trees are equal ONLY if order of all their children matches also
+     * @param o object to compare
+     * @return treu if objects considered equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -170,9 +184,17 @@ public class TreeNode implements Iterable<TreeNode> {
 
         TreeNode treeNode = (TreeNode) o;
 
-        if (!Objects.equals(name, treeNode.name)) return false;
         if (!Objects.equals(parent, treeNode.parent)) return false;
-        return children.equals(treeNode.children);
+
+        Iterator<TreeNode> thisTree = iterator();
+        Iterator<TreeNode> otherTree = treeNode.iterator();
+        while (thisTree.hasNext() || otherTree.hasNext()) {
+            if (thisTree.hasNext() != otherTree.hasNext() //if one queue is shorter than other trees are not equal
+                    ||!equalsNoParentNoChildren(thisTree.next(), otherTree.next())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
